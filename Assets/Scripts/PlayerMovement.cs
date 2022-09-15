@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour {
     private Vector2 cutEndPoint;
     private float cutTraceWidth;
     private bool isCreatingCut;
-    public bool isCutting;
+    private bool isCutting;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -93,11 +93,28 @@ public class PlayerMovement : MonoBehaviour {
             Vector3[] points = new Vector3[2] {cutStartPoint, lineEndPoint};
             lineRenderer.SetPositions(points);
         }
+
+        if (isCutting) {
+            if (rigidBody.velocity.magnitude < cutSpeed / 2.0) {
+                isCutting = false;
+                Physics2D.IgnoreLayerCollision(7, 8, false);
+            }
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision) {
         isCutting = false;
         Physics2D.IgnoreLayerCollision(7, 8, false);
+    }
+
+    void OnTriggerExit2D(Collider2D otherCollider) {
+        Debug.Log("Exit");
+        if (otherCollider.gameObject.tag == "Cuttable" && isCutting) {
+            Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
+            cuttableScript.cut(cutStartPoint, cutEndPoint);
+
+            Debug.Log("Cutted!");
+        }
     }
 
     private Vector3 limitVector(Vector3 origin, Vector3 dir, Vector3 v, float limit) {
