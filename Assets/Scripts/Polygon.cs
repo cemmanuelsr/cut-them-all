@@ -25,6 +25,27 @@ public class Polygon {
         return _edges;
     }
 
+    public Mesh getMesh() {
+        Mesh polygonMesh = new Mesh();
+
+        List<Vector3> meshVertices = new List<Vector3>();
+        foreach (Vector2 vert in _vertices) {
+            Vector3 vert3 = vert;
+            meshVertices.Add(vert3);
+        }
+
+        List<int> triIndices = new List<int>();
+        for (int i = 0; i < _vertices.Count - 2; i++) {
+            triIndices.Add(0);
+            triIndices.Add(i + 1);
+            triIndices.Add(i + 2);
+        }
+
+        polygonMesh.vertices = meshVertices.ToArray();
+        polygonMesh.triangles = triIndices.ToArray();
+        return polygonMesh;
+    }
+
     public float Area() {
         if (_vertices.Count == 3) {
             Vector2 p1 = _vertices[0], p2 = _vertices[1], p3 = _vertices[2];
