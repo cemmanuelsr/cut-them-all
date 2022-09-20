@@ -4,7 +4,7 @@ using UnityEngine;
 
 class Utils {
     public static bool isEqual(float a, float b) {
-        if (a >= b - Mathf.Epsilon && a <= b + Mathf.Epsilon) return true;
+        if (Mathf.Abs(a - b) < Mathf.Epsilon) return true;
         else return false;
     }
 
@@ -74,9 +74,7 @@ class Utils {
     }
 
     public static float getSegmentAngle(Vector2[] segment) {
-        if (isEqual(segment[0].x, segment[1].x))
-            return Mathf.Infinity;
-        return Mathf.Deg2Rad * (segment[1].y - segment[0].y) / (segment[1].x - segment[0].x);
+        return Mathf.Atan2(segment[1].y - segment[0].y, segment[1].x - segment[0].x);
     }
 
     public static Vector2 rotatePointByAngle(Vector2 P, float theta) {

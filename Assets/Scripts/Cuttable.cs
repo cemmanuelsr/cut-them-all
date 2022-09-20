@@ -44,8 +44,8 @@ public class Cuttable : MonoBehaviour
 
         List<Vector2> intersectionPoints = new List<Vector2>();
         foreach (Vector2[] edge in edges)
-            if (Utils.hasIntersection(segment, edge))
-                intersectionPoints.Add(Utils.getIntersectionPoint(segment, edge));
+            if (Utils.hasIntersection(edge, segment))
+                intersectionPoints.Add(Utils.getIntersectionPoint(edge, segment));
 
         if (intersectionPoints[0].y > intersectionPoints[1].y) {
             Vector2 temp = intersectionPoints[0];
@@ -53,38 +53,68 @@ public class Cuttable : MonoBehaviour
             intersectionPoints[1] = temp;
         }
 
-        if (intersectionPoints.Count % 2 == 0) {
-            float angleOfRotation = Mathf.PI / 2f - Utils.getSegmentAngle(intersectionPoints.ToArray());
-            Vector2[] rotatedSegment = new Vector2[2] {
-                Utils.rotatePointByAngle(intersectionPoints[0], angleOfRotation),
-                Utils.rotatePointByAngle(intersectionPoints[1], angleOfRotation)
-            };
+        float segmentAngle = Utils.getSegmentAngle(intersectionPoints.ToArray());
+        float angleOfRotation = segmentAngle;
+        Vector2[] rotatedSegment = new Vector2[2] {
+            Utils.rotatePointByAngle(intersectionPoints[0], angleOfRotation),
+            Utils.rotatePointByAngle(intersectionPoints[1], angleOfRotation)
+        };
 
-            List<Vector2> vertices = polygon.getVertices();
-            List<Vector2> backVertices = new List<Vector2>();
-            List<Vector2> frontVertices = new List<Vector2>();
-            frontVertices.Add(intersectionPoints[0]);
-            frontVertices.Add(intersectionPoints[1]);
+        List<Vector2> vertices = polygon.getVertices();
+        List<Vector2> backVertices = new List<Vector2>();
+        List<Vector2> frontVertices = new List<Vector2>();
 
-            foreach (Vector2 vertice in vertices) {
-                Vector2 rotatedVertice = Utils.rotatePointByAngle(vertice, angleOfRotation);
-                int relativePosition = Utils.getPointRelativePosition(rotatedVertice, rotatedSegment);
-                if (relativePosition == 0)
-                    backVertices.Add(vertice);
-                else
-                    frontVertices.Add(vertice);
+        if (intersectionPoints[1].x > intersectionPoints[0].x) {
+            if (intersectionPoints[1].y > intersectionPoints[0].y) {
+                frontVertices.Add(intersectionPoints[0]);
+                frontVertices.Add(intersectionPoints[1]);
+            } else {
+                frontVertices.Add(intersectionPoints[1]);
+                frontVertices.Add(intersectionPoints[0]);
             }
-
-            backVertices.Add(intersectionPoints[1]);
-            backVertices.Add(intersectionPoints[0]);
-
-            Polygon backPolygon = new Polygon(backVertices);
-            Polygon frontPolygon = new Polygon(frontVertices);
-
-            if (backPolygon.Area() < frontPolygon.Area()) polygon = frontPolygon;
-            else polygon = backPolygon;
-
-            initPolygon();
+        } else {
+            if (intersectionPoints[1].y > intersectionPoints[0].y) {
+                frontVertices.Add(intersectionPoints[1]);
+                frontVertices.Add(intersectionPoints[0]);
+            } else {
+                frontVertices.Add(intersectionPoints[0]);
+                frontVertices.Add(intersectionPoints[1]);
+            }
         }
+        
+        foreach (Vector2 vertice in vertices) {
+            Vector2 rotatedVertice = Utils.rotatePointByAngle(vertice, angleOfRotation);
+            int relativePosition = Utils.getPointRelativePosition(rotatedVertice, rotatedSegment);
+            if (relativePosition == 0)
+                backVertices.Add(vertice);
+            else
+                frontVertices.Add(vertice);
+        }
+
+        if (intersectionPoints[1].x > intersectionPoints[0].x) {
+            if (intersectionPoints[1].y > intersectionPoints[0].y) {
+                backVertices.Add(intersectionPoints[1]);
+                backVertices.Add(intersectionPoints[0]);
+            } else {
+                backVertices.Add(intersectionPoints[0]);
+                backVertices.Add(intersectionPoints[1]);
+            }
+        } else {
+            if (intersectionPoints[1].y > intersectionPoints[0].y) {
+                backVertices.Add(intersectionPoints[0]);
+                backVertices.Add(intersectionPoints[1]);
+            } else {
+                backVertices.Add(intersectionPoints[1]);
+                backVertices.Add(intersectionPoints[0]);
+            }
+        }
+
+        Polygon backPolygon = new Polygon(backVertices);
+        Polygon frontPolygon = new Polygon(frontVertices);
+
+        if (backPolygon.Area() < frontPolygon.Area()) polygon = frontPolygon;
+        else polygon = backPolygon;
+
+        initPolygon();
     }
 }
