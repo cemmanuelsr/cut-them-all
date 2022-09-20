@@ -19,8 +19,6 @@ public class Cuttable : MonoBehaviour
         meshRenderer = gameObject.GetComponent<MeshRenderer>();
         polygonCollider = gameObject.GetComponent<PolygonCollider2D>();
 
-        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
-
         polygon = new Polygon(polygonVertices);
         initPolygon();
     }

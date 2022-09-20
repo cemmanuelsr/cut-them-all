@@ -41,8 +41,18 @@ public class Polygon {
             triIndices.Add(i + 2);
         }
 
+        List<Vector2> uvs = new List<Vector2>();
+        for (int i = 0; i < _edges.Count; i++) {
+            uvs.Add(new Vector2(
+                (float)(Mathf.Cos(2.0f * Mathf.PI * i / _edges.Count + 0.25f * Mathf.PI) / 2.0f + 0.5f),
+                (float)(Mathf.Sin(2.0f * Mathf.PI * i / _edges.Count + 0.25f * Mathf.PI) / 2.0f + 0.5f)
+            ));
+        }
+
         polygonMesh.vertices = meshVertices.ToArray();
         polygonMesh.triangles = triIndices.ToArray();
+        polygonMesh.uv = uvs.ToArray();
+        polygonMesh.RecalculateNormals();
         return polygonMesh;
     }
 

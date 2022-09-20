@@ -108,12 +108,9 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void OnTriggerExit2D(Collider2D otherCollider) {
-        Debug.Log("Exit");
-        if (otherCollider.gameObject.tag == "Cuttable" && isCutting) {
+        if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting) {
             Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
             cuttableScript.cut(cutStartPoint, cutEndPoint);
-
-            Debug.Log("Cutted!");
         }
     }
 
@@ -130,7 +127,7 @@ public class PlayerMovement : MonoBehaviour {
         cutEndPoint = limitVector(cutStartPoint, lineDir, cutEndPoint, maxCutLength);
         
         // Apply force in the direction of the cut
-        Vector2 cutForce = lineDir * Vector3.Distance(cutStartPoint, cutEndPoint) * cutSpeed;
+        Vector2 cutForce = cutSpeed * Vector3.Distance(cutStartPoint, cutEndPoint) * lineDir;
         rigidBody.AddForce(cutForce, ForceMode2D.Impulse);
     }
 }
