@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
-    private BoxCollider2D boxCollider;
+    private CapsuleCollider2D capsuleCollider;
     private Rigidbody2D rigidBody;
     private LineRenderer lineRenderer;
     private Vector2 cutStartPoint;
@@ -11,13 +11,14 @@ public class PlayerMovement : MonoBehaviour {
     private float cutTraceWidth;
     private bool isCreatingCut;
     private bool isCutting;
+    private List<string> animationStates;
 
     public float maxCutLength;
     public float cutSpeed;
     
     public void Start() {
         // Player collision box and rigid body
-        boxCollider = gameObject.GetComponent<BoxCollider2D>();
+        capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
 
         // Line renderer line width
@@ -38,6 +39,13 @@ public class PlayerMovement : MonoBehaviour {
         // Flag that controls when the player is cutting
         isCutting = false;
 
+        // Possible states for animation
+        animationStates = new List<string>();
+        animationStates.Add("IsPreparing");
+        animationStates.Add("IsJumping");
+        animationStates.Add("IsFalling");
+        animationStates.Add("IsAttacking");
+
         // Cut parameters
         maxCutLength = 8.0f;
         cutSpeed = 4.0f;
@@ -49,10 +57,10 @@ public class PlayerMovement : MonoBehaviour {
             // Mouse world position
             Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             worldMousePos.z = 0.0f;
-            if (boxCollider.bounds.Contains(worldMousePos)) {
+            if (capsuleCollider.bounds.Contains(worldMousePos)) {
                 // Activate creating cut flag and store the cut starting point
                 isCreatingCut = true;
-                cutStartPoint = transform.TransformPoint(boxCollider.offset);
+                cutStartPoint = transform.TransformPoint(capsuleCollider.offset);
             }
         }
 
@@ -100,6 +108,21 @@ public class PlayerMovement : MonoBehaviour {
                 Physics2D.IgnoreLayerCollision(7, 8, false);
             }
         }
+
+
+        if (rigidBody.velocity.y <= 0.0f) {
+            if (isGrounded()) {
+                if (Input.GetMouseButton(0)) {
+                    // Change animation to prepare
+                    setOneTrue("IsPreparing");
+                } else {
+                    setOneTrue("");
+                }
+            }
+            else
+                setOneTrue("IsFalling");
+        } else
+                setOneTrue("IsJumping");
     }
 
     void OnCollisionEnter2D(Collision2D collision) {
@@ -111,7 +134,20 @@ public class PlayerMovement : MonoBehaviour {
         if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting) {
             Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
             cuttableScript.cut(cutStartPoint, cutEndPoint);
+
+            // Change animation to falling
+            setOneTrue("IsAttacking");
         }
+    }
+
+    private bool isGrounded() {
+        // Cast a ray straight down.
+        int layerMask = 1 << 8;
+        layerMask = ~layerMask;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 1, layerMask);
+
+        // Return if it hits something
+        return hit.collider != null;
     }
 
     private Vector3 limitVector(Vector3 origin, Vector3 dir, Vector3 v, float limit) {
@@ -119,6 +155,12 @@ public class PlayerMovement : MonoBehaviour {
         if (Vector3.Distance(origin, v) > limit)
             return origin + dir * limit;
         return v;
+    }
+
+    private void setOneTrue(string toSetTrue) {
+        Animator animator = gameObject.GetComponent<Animator>();
+        foreach (string animationState in animationStates)
+            animator.SetBool(animationState, animationState == toSetTrue);
     }
 
     private void makeCut() {
