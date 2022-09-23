@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
     private CapsuleCollider2D capsuleCollider;
+    private BoxCollider2D groundCollider;
     private Rigidbody2D rigidBody;
     private LineRenderer lineRenderer;
     private Vector2 cutStartPoint;
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour {
     public void Start() {
         // Player collision box and rigid body
         capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
+        groundCollider = gameObject.GetComponent<BoxCollider2D>();
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
 
         // Line renderer line width
@@ -109,6 +111,12 @@ public class PlayerMovement : MonoBehaviour {
             }
         }
 
+        // Flip sprite according to mouse position
+        Vector3 _worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (_worldMousePos.x < transform.position.x && transform.localScale.x > 0)
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        else if (_worldMousePos.x > transform.position.x && transform.localScale.x < 0)
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
         if (rigidBody.velocity.y <= 0.0f) {
             if (isGrounded()) {
@@ -141,13 +149,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private bool isGrounded() {
-        // Cast a ray straight down.
-        int layerMask = 1 << 8;
-        layerMask = ~layerMask;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 1, layerMask);
-
-        // Return if it hits something
-        return hit.collider != null;
+        return groundCollider.IsTouchingLayers(-1);
     }
 
     private Vector3 limitVector(Vector3 origin, Vector3 dir, Vector3 v, float limit) {
