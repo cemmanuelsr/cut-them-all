@@ -8,6 +8,18 @@ class Utils {
         else return false;
     }
 
+    public static bool isBetween(float x, float a, float b) {
+        return (x >= a && x <= b) || (x >= b && x <= b);
+    }
+
+    public static bool isColinear(Vector2 P, Vector2 A, Vector2 B) {
+        return isEqual( (P.y - A.y) / (P.x - A.x) , (B.y - A.y) / (B.x - A.x) );
+    }
+
+    public static bool isPointBetween(Vector2 P, Vector2 A, Vector2 B) {
+        return isColinear(P, A, B) && isBetween(P.x, A.x, B.x) && isBetween(P.y, A.y, B.y);
+    }
+
     public static int getPointRelativePosition(Vector2 P, Vector2[] line) {
 
         // return 0 if point is before the line
