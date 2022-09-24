@@ -14,8 +14,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool isCutting;
     private List<string> animationStates;
 
-    public float maxCutLength;
-    public float cutSpeed;
+    public float maxCutLength = 4.0f;
+    public float cutSpeed = 3.0f;
     
     public void Start() {
         // Player collision box and rigid body
@@ -47,10 +47,6 @@ public class PlayerMovement : MonoBehaviour {
         animationStates.Add("IsJumping");
         animationStates.Add("IsFalling");
         animationStates.Add("IsAttacking");
-
-        // Cut parameters
-        maxCutLength = 8.0f;
-        cutSpeed = 4.0f;
     }
     
     public void Update() {
@@ -58,7 +54,7 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             // Mouse world position
             Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            worldMousePos.z = 0.0f;
+            worldMousePos.z = transform.position.z;
             if (capsuleCollider.bounds.Contains(worldMousePos)) {
                 // Activate creating cut flag and store the cut starting point
                 isCreatingCut = true;
@@ -78,7 +74,7 @@ public class PlayerMovement : MonoBehaviour {
 
                 // Mouse world position and store cut end point
                 Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                worldMousePos.z = 0.0f;
+                worldMousePos.z = transform.position.z;
                 cutEndPoint = worldMousePos;
 
                 // Enable the cutting flag and collision mask
@@ -93,7 +89,10 @@ public class PlayerMovement : MonoBehaviour {
         if (isCreatingCut) {
             // Mouse world position and vector of points
             Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            worldMousePos.z = 0.0f;
+            worldMousePos.z = transform.position.z;
+
+            // Update cut start point to the player's position
+            cutStartPoint = transform.TransformPoint(capsuleCollider.offset);
 
             // Limit drawing point to max cut length
             Vector2 lineDir = Vector3.Normalize(new Vector2(worldMousePos.x, worldMousePos.y) - cutStartPoint);

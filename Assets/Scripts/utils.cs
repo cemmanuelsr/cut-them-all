@@ -96,4 +96,7 @@ class Utils {
 
         return P_rotate;
     }
+
+    public static Vector2 transformRelative(Transform relativeTransform, Vector2 toTransform) {
+    }
 }

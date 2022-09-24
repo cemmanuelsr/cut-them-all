@@ -8,7 +8,6 @@ public class Cuttable : MonoBehaviour
     private MeshRenderer meshRenderer;
     private PolygonCollider2D polygonCollider;
 
-    public Vector2 scale;
     public List<Vector2> polygonVertices;
     public Polygon polygon;
     public bool canCut = true;
@@ -25,16 +24,16 @@ public class Cuttable : MonoBehaviour
     }
 
     public void initPolygon() {
-        polygonCollider.pathCount = 1;
-        polygonCollider.points = polygon.getVertices().ToArray();
-        polygonCollider.isTrigger = true;
-
         Mesh polygonMesh = polygon.getMesh();
         meshFilter.mesh = polygonMesh;
 
+        polygonCollider.pathCount = 1;
+        polygonCollider.points = polygonVertices.ToArray();
+        polygonCollider.isTrigger = true;
+
         GameObject childTrigger = transform.GetChild(0).gameObject;
         childTrigger.GetComponent<PolygonCollider2D>().pathCount = 1;
-        childTrigger.GetComponent<PolygonCollider2D>().points = polygon.getVertices().ToArray();
+        childTrigger.GetComponent<PolygonCollider2D>().points = polygonVertices.ToArray();
     }
 
     public void cut(Vector2 cutOrigin, Vector2 cutEnd) {
@@ -47,12 +46,6 @@ public class Cuttable : MonoBehaviour
         foreach (Vector2[] edge in edges)
             if (Utils.hasIntersection(edge, segment))
                 intersectionPoints.Add(Utils.getIntersectionPoint(edge, segment));
-            
-        // if (intersectionPoints[0].y > intersectionPoints[1].y) {
-        //     Vector2 temp = intersectionPoints[0];
-        //     intersectionPoints[0] = intersectionPoints[1];
-        //     intersectionPoints[1] = temp;
-        // }
 
         float segmentAngle = Utils.getSegmentAngle(intersectionPoints.ToArray());
         if (segmentAngle > Mathf.PI / 2f)
@@ -68,7 +61,6 @@ public class Cuttable : MonoBehaviour
         List<Vector2> frontVertices = new List<Vector2>();
 
         int start, end;
-
         if (intersectionPoints[1].x > intersectionPoints[0].x) {
             if (intersectionPoints[1].y > intersectionPoints[0].y) {
                 frontVertices.Add(intersectionPoints[1]);
