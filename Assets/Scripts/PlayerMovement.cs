@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour {
     private BoxCollider2D groundCollider;
     private Rigidbody2D rigidBody;
     private LineRenderer lineRenderer;
+    private Animator animator;
     private Vector2 cutStartPoint;
     private Vector2 cutEndPoint;
     private float cutTraceWidth;
@@ -16,12 +17,15 @@ public class PlayerMovement : MonoBehaviour {
 
     public float maxCutLength = 4.0f;
     public float cutSpeed = 3.0f;
+    public int health = 3;
     
     public void Start() {
         // Player collision box and rigid body
         capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
         groundCollider = gameObject.GetComponent<BoxCollider2D>();
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
+
+        animator = gameObject.GetComponent<Animator>();
 
         // Line renderer line width
         cutTraceWidth = 0.01f;
@@ -47,6 +51,8 @@ public class PlayerMovement : MonoBehaviour {
         animationStates.Add("IsJumping");
         animationStates.Add("IsFalling");
         animationStates.Add("IsAttacking");
+        animationStates.Add("IsHurt");
+        animationStates.Add("IsDead");
     }
     
     public void Update() {
@@ -135,6 +141,14 @@ public class PlayerMovement : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D collision) {
         isCutting = false;
         Physics2D.IgnoreLayerCollision(7, 8, false);
+
+        if (collision.gameObject.CompareTag("Enemy")) {
+            health -= 1;
+            if (health <= 0)
+                setOneTrue("IsDead");
+            else
+                setOneTrue("IsHurt");
+        }
     }
 
     void OnTriggerExit2D(Collider2D otherCollider) {
@@ -159,7 +173,6 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void setOneTrue(string toSetTrue) {
-        Animator animator = gameObject.GetComponent<Animator>();
         foreach (string animationState in animationStates)
             animator.SetBool(animationState, animationState == toSetTrue);
     }

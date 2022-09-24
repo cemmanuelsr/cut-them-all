@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cuttable
+  - Enemy
   layers:
   - Default
   - TransparentFX
