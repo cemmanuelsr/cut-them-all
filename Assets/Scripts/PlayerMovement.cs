@@ -14,10 +14,12 @@ public class PlayerMovement : MonoBehaviour {
     private bool isCreatingCut;
     private bool isCutting;
     private List<string> animationStates;
+    private bool hasUpgrade;
 
     public float maxCutLength = 4.0f;
     public float cutSpeed = 3.0f;
     public int health = 3;
+    public int totalCuts = 0;
     
     public void Start() {
         // Player collision box and rigid body
@@ -45,6 +47,9 @@ public class PlayerMovement : MonoBehaviour {
         // Flag that controls when the player is cutting
         isCutting = false;
 
+        // Upgrade
+        hasUpgrade = true;
+
         // Possible states for animation
         animationStates = new List<string>();
         animationStates.Add("IsPreparing");
@@ -57,7 +62,7 @@ public class PlayerMovement : MonoBehaviour {
     
     public void Update() {
         // Get mouse click on player's collision box
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && ((hasUpgrade && totalCuts < 2) || isGrounded())) {
             // Mouse world position
             Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             worldMousePos.z = transform.position.z;
@@ -71,6 +76,9 @@ public class PlayerMovement : MonoBehaviour {
         // Get mouse up click
         if (Input.GetMouseButtonUp(0)) {
             if (isCreatingCut) {
+                // Add one to total cuts
+                totalCuts++;
+
                 // Disable creating cut flag
                 isCreatingCut = false;
 
@@ -125,6 +133,7 @@ public class PlayerMovement : MonoBehaviour {
 
         if (rigidBody.velocity.y <= 0.0f) {
             if (isGrounded()) {
+                totalCuts = 0;
                 if (Input.GetMouseButton(0)) {
                     // Change animation to prepare
                     setOneTrue("IsPreparing");
@@ -148,6 +157,15 @@ public class PlayerMovement : MonoBehaviour {
                 setOneTrue("IsDead");
             else
                 setOneTrue("IsHurt");
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D otherCollider) {
+        if (otherCollider.gameObject.name == "BossTrigger") {
+            GameObject cam = GameObject.Find("Main Camera");
+            cam.GetComponent<Camera>().orthographicSize = 11;
+            CameraSmoothFollow smoothFollow = cam.GetComponent<CameraSmoothFollow>();
+            smoothFollow.target = GameObject.Find("BossCameraAnchor");
         }
     }
 
