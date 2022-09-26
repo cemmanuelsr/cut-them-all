@@ -28,12 +28,12 @@ public class Cuttable : MonoBehaviour
         meshFilter.mesh = polygonMesh;
 
         polygonCollider.pathCount = 1;
-        polygonCollider.points = polygonVertices.ToArray();
+        polygonCollider.points = polygon.getVertices().ToArray();
         polygonCollider.isTrigger = true;
 
         GameObject childTrigger = transform.GetChild(0).gameObject;
         childTrigger.GetComponent<PolygonCollider2D>().pathCount = 1;
-        childTrigger.GetComponent<PolygonCollider2D>().points = polygonVertices.ToArray();
+        childTrigger.GetComponent<PolygonCollider2D>().points = polygon.getVertices().ToArray();
     }
 
     public void cut(Vector2 cutOrigin, Vector2 cutEnd) {
@@ -139,6 +139,14 @@ public class Cuttable : MonoBehaviour
 
         Cuttable minorCuttable = minorObject.GetComponent<Cuttable>();
         minorCuttable.polygonVertices = minorPolygon.getVertices();
+
+        List<Vector2> minorVertices = minorPolygon.getVertices();
+        List<Vector2> polyVertices = polygon.getVertices();
+
+        if (Utils.GetNormal(minorVertices[0], minorVertices[1], minorVertices[2]).z > 0)
+            minorObject.transform.localScale = new Vector3(minorObject.transform.localScale.x, minorObject.transform.localScale.y, -minorObject.transform.localScale.z);
+        if (Utils.GetNormal(polyVertices[0], polyVertices[1], polyVertices[2]).z > 0)
+            gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x, gameObject.transform.localScale.y, -gameObject.transform.localScale.z);
 
         initPolygon();
         minorCuttable.initPolygon();

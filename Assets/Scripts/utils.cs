@@ -12,6 +12,16 @@ class Utils {
         return (x >= a && x <= b) || (x >= b && x <= b);
     }
 
+    public static Vector3 GetNormal(Vector3 a, Vector3 b, Vector3 c)
+    {
+        // Find vectors corresponding to two of the sides of the triangle.
+        Vector3 side1 = b - a;
+        Vector3 side2 = c - a;
+
+        // Cross the vectors to get a perpendicular vector, then normalize it.
+        return Vector3.Cross(side1, side2).normalized;
+    }
+
     public static bool isColinear(Vector2 P, Vector2 A, Vector2 B) {
         return isEqual( (P.y - A.y) / (P.x - A.x) , (B.y - A.y) / (B.x - A.x) );
     }
