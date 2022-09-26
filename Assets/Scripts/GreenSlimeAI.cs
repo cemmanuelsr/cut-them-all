@@ -13,6 +13,12 @@ public class GreenSlimeAI : MonoBehaviour
         transform.position += new Vector3(1.0f, 0.0f, 0.0f) * Time.deltaTime * movementDir;    
     }
 
+    void OnCollisionEnter2D(Collider2D collider) {
+        if (collider.gameObject.CompareTag("Cuttable") && collider.gameObject.GetComponent<Rigidbody2D>().velocity.y < 0) {
+            Destroy(gameObject);
+        }
+    }
+
     bool isNextToWall() {
         int playerMask = ~(1 << 8);
         Vector2 origin = new Vector2(transform.position.x + movementDir * transform.localScale.x / 2.0f, transform.position.y);

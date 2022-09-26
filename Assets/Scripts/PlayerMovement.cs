@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour {
     private bool isCutting;
     private List<string> animationStates;
     private bool hasUpgrade;
+    private float initialHorizontalVelocity;
 
     public float maxCutLength = 4.0f;
     public float cutSpeed = 3.0f;
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour {
 
         // Flag that controls when the player is cutting
         isCutting = false;
+        initialHorizontalVelocity = 0;
 
         // Upgrade
         hasUpgrade = true;
@@ -118,7 +120,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         if (isCutting) {
-            if (rigidBody.velocity.magnitude < cutSpeed / 2.0) {
+            if (Utils.isBetween(rigidBody.velocity.magnitude, initialHorizontalVelocity + 0.1f, initialHorizontalVelocity - 0.1f)) {
                 isCutting = false;
                 Physics2D.IgnoreLayerCollision(7, 8, false);
             }
@@ -185,7 +187,7 @@ public class PlayerMovement : MonoBehaviour {
 
     private Vector3 limitVector(Vector3 origin, Vector3 dir, Vector3 v, float limit) {
         // Limit vector v to limit t based on vector origin and direction
-        if (Vector3.Distance(origin, v) > limit)
+        if (Vector3.Distance(origin, v) > limit) 
             return origin + dir * limit;
         return v;
     }
@@ -200,8 +202,8 @@ public class PlayerMovement : MonoBehaviour {
         Vector2 lineDir = Vector3.Normalize(cutEndPoint - cutStartPoint);
         cutEndPoint = limitVector(cutStartPoint, lineDir, cutEndPoint, maxCutLength);
         
-        // Apply force in the direction of the cut
-        Vector2 cutForce = cutSpeed * Vector3.Distance(cutStartPoint, cutEndPoint) * lineDir;
-        rigidBody.AddForce(cutForce, ForceMode2D.Impulse);
+        // Apply velocity in the direction of the cut
+        rigidBody.velocity = cutSpeed * Vector3.Distance(cutStartPoint, cutEndPoint) * lineDir;
+        initialHorizontalVelocity = rigidBody.velocity.x;
     }
 }
