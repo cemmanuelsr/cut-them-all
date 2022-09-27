@@ -17,8 +17,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool hasUpgrade;
     private float initialHorizontalVelocity;
 
-    public float maxCutLength = 4.0f;
-    public float cutSpeed = 3.0f;
+    public float maxCutLength;
+    public float cutSpeed;
     public int health = 3;
     public int totalCuts = 0;
     
@@ -32,6 +32,8 @@ public class PlayerMovement : MonoBehaviour {
 
         // Line renderer line width
         cutTraceWidth = 0.01f;
+        maxCutLength = 6f;
+        cutSpeed = 2.5f;
 
         // Line renderer
         lineRenderer = gameObject.GetComponent<LineRenderer>();
@@ -120,7 +122,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         if (isCutting) {
-            if (Utils.isBetween(rigidBody.velocity.magnitude, initialHorizontalVelocity + 0.1f, initialHorizontalVelocity - 0.1f)) {
+            if (Utils.isBetween(rigidBody.velocity.magnitude, initialHorizontalVelocity + 0.025f, initialHorizontalVelocity - 0.025f)) {
                 isCutting = false;
                 Physics2D.IgnoreLayerCollision(7, 8, false);
             }
@@ -204,6 +206,6 @@ public class PlayerMovement : MonoBehaviour {
         
         // Apply velocity in the direction of the cut
         rigidBody.velocity = cutSpeed * Vector3.Distance(cutStartPoint, cutEndPoint) * lineDir;
-        initialHorizontalVelocity = rigidBody.velocity.x;
+        initialHorizontalVelocity = Mathf.Abs(rigidBody.velocity.x);
     }
 }

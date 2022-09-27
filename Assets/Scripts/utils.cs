@@ -9,7 +9,7 @@ class Utils {
     }
 
     public static bool isBetween(float x, float a, float b) {
-        return (x >= a && x <= b) || (x >= b && x <= b);
+        return (x >= a && x <= b) || (x >= b && x <= a);
     }
 
     public static Vector3 GetNormal(Vector3 a, Vector3 b, Vector3 c)

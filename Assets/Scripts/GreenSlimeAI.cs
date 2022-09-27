@@ -13,7 +13,7 @@ public class GreenSlimeAI : MonoBehaviour
         transform.position += new Vector3(1.0f, 0.0f, 0.0f) * Time.deltaTime * movementDir;    
     }
 
-    void OnCollisionEnter2D(Collider2D collider) {
+    void OnCollisionEnter2D(Collision2D collider) {
         if (collider.gameObject.CompareTag("Cuttable") && collider.gameObject.GetComponent<Rigidbody2D>().velocity.y < 0) {
             Destroy(gameObject);
         }
