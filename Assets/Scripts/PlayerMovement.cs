@@ -174,7 +174,9 @@ public class PlayerMovement : MonoBehaviour {
 
         if (collision.gameObject.CompareTag("Boss") && isCuttingBoss) {
             animator.Play("Attack");
-            collision.gameObject.GetComponent<BossSlime>().takeDamage();
+            BossSlime boss = collision.gameObject.GetComponent<BossSlime>();
+            boss.takeDamage(transform.position);
+
             isCuttingBoss = false;
         } else if (collision.gameObject.CompareTag("Boss") && !isCuttingBoss) {
             health -= 1;
@@ -194,6 +196,9 @@ public class PlayerMovement : MonoBehaviour {
             CameraSmoothFollow smoothFollow = cam.GetComponent<CameraSmoothFollow>();
             smoothFollow.target = GameObject.Find("BossCameraAnchor");
             health = 3;
+
+            GameObject boss = GameObject.Find("BossSlime");
+            boss.GetComponent<BossSlime>().run = true;
         }
     }
 
