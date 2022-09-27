@@ -171,6 +171,7 @@ public class PlayerMovement : MonoBehaviour {
             cam.GetComponent<Camera>().orthographicSize = 11;
             CameraSmoothFollow smoothFollow = cam.GetComponent<CameraSmoothFollow>();
             smoothFollow.target = GameObject.Find("BossCameraAnchor");
+            health = 3;
         }
     }
 

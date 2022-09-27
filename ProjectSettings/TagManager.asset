@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Cuttable
   - Enemy
+  - Upgrade
   layers:
   - Default
   - TransparentFX
