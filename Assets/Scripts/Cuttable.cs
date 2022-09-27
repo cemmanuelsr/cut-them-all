@@ -140,6 +140,8 @@ public class Cuttable : MonoBehaviour
         Cuttable minorCuttable = minorObject.GetComponent<Cuttable>();
         minorCuttable.polygonVertices = minorPolygon.getVertices();
 
+        minorCuttable.canCut = false;
+
         List<Vector2> minorVertices = minorPolygon.getVertices();
         List<Vector2> polyVertices = polygon.getVertices();
 

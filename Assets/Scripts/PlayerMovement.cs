@@ -181,7 +181,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void OnTriggerExit2D(Collider2D otherCollider) {
-        if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting) {
+        if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting && otherCollider.gameObject.GetComponent<Cuttable>().canCut) {
             Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
             cuttableScript.cut(cutStartPoint, cutEndPoint);
 
