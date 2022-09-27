@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour {
     private float initialHorizontalVelocity;
     private int health = 3;
     private int totalCuts = 0;
+    private bool isCuttingBoss;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -49,6 +50,7 @@ public class PlayerMovement : MonoBehaviour {
 
         // Flag that controls when the player is cutting
         isCutting = false;
+        isCuttingBoss = false;
         initialHorizontalVelocity = 0;
 
         // Upgrade
@@ -97,6 +99,7 @@ public class PlayerMovement : MonoBehaviour {
 
                 // Enable the cutting flag and collision mask
                 isCutting = true;
+                isCuttingBoss = true;
                 Physics2D.IgnoreLayerCollision(7, 8, true);
 
                 // Apply cutting force based on cutting parameters
@@ -122,7 +125,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         if (isCutting) {
-            if (Utils.isBetween(rigidBody.velocity.magnitude, initialHorizontalVelocity + 0.025f, initialHorizontalVelocity - 0.025f)) {
+            if (Utils.isBetween(rigidBody.velocity.magnitude, initialHorizontalVelocity + 0.02f, initialHorizontalVelocity - 0.02f)) {
                 isCutting = false;
                 Physics2D.IgnoreLayerCollision(7, 8, false);
             }
@@ -168,6 +171,20 @@ public class PlayerMovement : MonoBehaviour {
             hasUpgrade = true;
             Destroy(collision.gameObject);
         }
+
+        if (collision.gameObject.CompareTag("Boss") && isCuttingBoss) {
+            animator.Play("Attack");
+            collision.gameObject.GetComponent<BossSlime>().takeDamage();
+            isCuttingBoss = false;
+        } else if (collision.gameObject.CompareTag("Boss") && !isCuttingBoss) {
+            health -= 1;
+            if (health <= 0)
+                animator.Play("Dead");
+            else
+                animator.Play("Hurt");
+        }
+
+        isCuttingBoss = false;
     }
 
     void OnTriggerEnter2D(Collider2D otherCollider) {

@@ -7,6 +7,7 @@ TagManager:
   - Cuttable
   - Enemy
   - Upgrade
+  - Boss
   layers:
   - Default
   - TransparentFX
