@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour {
     private int health = 3;
     private int totalCuts = 0;
     private bool isCuttingBoss;
+    private Vector3 respawnPoint;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -55,6 +56,9 @@ public class PlayerMovement : MonoBehaviour {
 
         // Upgrade
         hasUpgrade = false;
+
+        // Respawn coords
+        respawnPoint = transform.position;
 
         // Possible states for animation
         animationStates = new List<string>();
@@ -182,8 +186,10 @@ public class PlayerMovement : MonoBehaviour {
             health -= 1;
             if (health <= 0)
                 animator.Play("Dead");
-            else
+            else {
                 animator.Play("Hurt");
+                rigidBody.position = respawnPoint;
+            }
         }
 
         isCuttingBoss = false;
@@ -199,6 +205,13 @@ public class PlayerMovement : MonoBehaviour {
 
             GameObject boss = GameObject.Find("BossSlime");
             boss.GetComponent<BossSlime>().run = true;
+        }
+
+        if (otherCollider.gameObject.CompareTag("Checkpoint")) {
+            Debug.Log(respawnPoint.x);
+            Vector3 checkpointPosition = otherCollider.gameObject.transform.position;
+            respawnPoint = new Vector3(checkpointPosition.x + 1.32f, checkpointPosition.y, checkpointPosition.z);
+            Debug.Log(respawnPoint.x);
         }
     }
 
