@@ -154,13 +154,14 @@ public class PlayerMovement : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D collision) {
         isCutting = false;
         Physics2D.IgnoreLayerCollision(7, 8, false);
+        Animator animator = gameObject.GetComponent<Animator>();
 
         if (collision.gameObject.CompareTag("Enemy")) {
             health -= 1;
             if (health <= 0)
-                setOneTrue("IsDead");
+                animator.Play("Dead");
             else
-                setOneTrue("IsHurt");
+                animator.Play("Hurt");
         }
     }
 
@@ -179,7 +180,7 @@ public class PlayerMovement : MonoBehaviour {
             cuttableScript.cut(cutStartPoint, cutEndPoint);
 
             // Change animation to falling
-            setOneTrue("IsAttacking");
+            animator.Play("Attack");
         }
     }
 

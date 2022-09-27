@@ -10,7 +10,7 @@ public class GreenSlimeAI : MonoBehaviour
         if (isNextToWall())
             movementDir *= -1;
 
-        transform.position += new Vector3(1.0f, 0.0f, 0.0f) * Time.deltaTime * movementDir;    
+        transform.position += new Vector3(0.75f, 0.0f, 0.0f) * Time.deltaTime * movementDir;    
     }
 
     void OnCollisionEnter2D(Collision2D collider) {
