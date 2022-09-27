@@ -122,9 +122,10 @@ public class PlayerMovement : MonoBehaviour {
             // Limit drawing point to max cut length
             Vector2 lineDir = Vector3.Normalize(new Vector2(worldMousePos.x, worldMousePos.y) - cutStartPoint);
             Vector3 lineEndPoint = limitVector(cutStartPoint, lineDir, worldMousePos, maxCutLength);
+            lineEndPoint.z = transform.position.z;
 
             // Draw cut trace line
-            Vector3[] points = new Vector3[2] {cutStartPoint, lineEndPoint};
+            Vector3[] points = new Vector3[2] {transform.InverseTransformPoint(cutStartPoint), transform.InverseTransformPoint(lineEndPoint)};
             lineRenderer.SetPositions(points);
         }
 
