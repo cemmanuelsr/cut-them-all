@@ -168,8 +168,13 @@ public class PlayerMovement : MonoBehaviour {
             health -= 1;
             if (health <= 0)
                 animator.Play("Dead");
-            else
+            else {
                 animator.Play("Hurt");
+                rigidBody.position = respawnPoint;
+
+                SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+                soundManager.playDamage();
+            }
         }
 
         if (collision.gameObject.CompareTag("Upgrade")) {
@@ -190,6 +195,9 @@ public class PlayerMovement : MonoBehaviour {
             else {
                 animator.Play("Hurt");
                 rigidBody.position = respawnPoint;
+
+                SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+                soundManager.playDamage();
             }
         }
 
@@ -218,11 +226,15 @@ public class PlayerMovement : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D otherCollider) {
         if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting && otherCollider.gameObject.GetComponent<Cuttable>().canCut) {
+            // Play sound
+            SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+            soundManager.playSlash();
+
+            // Change animation to attack
+            animator.Play("Attack");
+
             Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
             cuttableScript.cut(cutStartPoint, cutEndPoint);
-
-            // Change animation to falling
-            animator.Play("Attack");
         }
     }
 
