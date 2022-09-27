@@ -16,11 +16,11 @@ public class PlayerMovement : MonoBehaviour {
     private List<string> animationStates;
     private bool hasUpgrade;
     private float initialHorizontalVelocity;
+    private int health = 3;
+    private int totalCuts = 0;
 
     public float maxCutLength;
     public float cutSpeed;
-    public int health = 3;
-    public int totalCuts = 0;
     
     public void Start() {
         // Player collision box and rigid body
@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour {
         initialHorizontalVelocity = 0;
 
         // Upgrade
-        hasUpgrade = true;
+        hasUpgrade = false;
 
         // Possible states for animation
         animationStates = new List<string>();
@@ -162,6 +162,11 @@ public class PlayerMovement : MonoBehaviour {
                 animator.Play("Dead");
             else
                 animator.Play("Hurt");
+        }
+
+        if (collision.gameObject.CompareTag("Upgrade")) {
+            hasUpgrade = true;
+            Destroy(collision.gameObject);
         }
     }
 

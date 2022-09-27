@@ -15,8 +15,11 @@ public class UpgradeAnimation : MonoBehaviour
 
     void Update()
     {
-        dir *= -1;
+        if ((transform.position.y > startPosition.y + 0.25f) && (dir == 1))
+            dir = -1;
+        else if ((transform.position.y < startPosition.y - 0.25f) && (dir == -1))
+            dir = 1;
 
-        transform.position += new Vector3(0.0f, 0.25f, 0.0f) * Time.deltaTime * dir;
+        transform.position += new Vector3(0.0f, 1f, 0.0f) * Time.deltaTime * dir;
     }
 }
