@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour {
     private CapsuleCollider2D capsuleCollider;
@@ -20,6 +21,9 @@ public class PlayerMovement : MonoBehaviour {
     private int totalCuts = 0;
     private bool isCuttingBoss;
     private Vector3 respawnPoint;
+    private bool isPaused;
+    public GameObject pauseMenuUI;
+    public GameObject lifeUI;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -57,6 +61,11 @@ public class PlayerMovement : MonoBehaviour {
         // Upgrade
         hasUpgrade = false;
 
+        // Pause
+        isPaused = false;
+        pauseMenuUI.SetActive(false);
+        lifeUI.SetActive(true);
+
         // Respawn coords
         respawnPoint = transform.position;
 
@@ -69,8 +78,47 @@ public class PlayerMovement : MonoBehaviour {
         animationStates.Add("IsHurt");
         animationStates.Add("IsDead");
     }
+
+    public void Resume() {
+        Time.timeScale = 1f;
+        pauseMenuUI.SetActive(false);
+        lifeUI.SetActive(true);
+        isPaused = false;
+    }
+
+    public void Pause() {
+        Time.timeScale = 0f;
+        pauseMenuUI.SetActive(true);
+        lifeUI.SetActive(false);
+        isPaused = true;
+    }
+
+    public void Restart() {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void QuitGame() {
+        Application.Quit();
+    }
     
     public void Update() {
+        if (Input.GetKeyDown("escape")) {
+            if (isPaused) {
+                Resume();
+            } else {
+                Pause();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && isPaused) {
+            Restart();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q) && isPaused) {
+            QuitGame();
+        }
+
         // Get mouse click on player's collision box
         if (Input.GetMouseButtonDown(0) && ((hasUpgrade && totalCuts < 2) || isGrounded())) {
             // Mouse world position
@@ -166,14 +214,18 @@ public class PlayerMovement : MonoBehaviour {
 
         if (collision.gameObject.CompareTag("Enemy")) {
             health -= 1;
-            if (health <= 0)
+            if (health <= 0) {
                 animator.Play("Dead");
+                SceneManager.LoadScene("End");
+            }
             else {
                 animator.Play("Hurt");
                 rigidBody.position = respawnPoint;
 
                 SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
                 soundManager.playDamage();
+                
+                lifeUI.transform.GetChild(3 - health).gameObject.SetActive(false);
             }
         }
 
@@ -211,6 +263,9 @@ public class PlayerMovement : MonoBehaviour {
             CameraSmoothFollow smoothFollow = cam.GetComponent<CameraSmoothFollow>();
             smoothFollow.target = GameObject.Find("BossCameraAnchor");
             health = 3;
+            lifeUI.transform.GetChild(0).gameObject.SetActive(true);
+            lifeUI.transform.GetChild(1).gameObject.SetActive(true);
+            lifeUI.transform.GetChild(2).gameObject.SetActive(true);
 
             GameObject boss = GameObject.Find("BossSlime");
             boss.GetComponent<BossSlime>().run = true;
