@@ -170,9 +170,10 @@ public class PlayerMovement : MonoBehaviour {
             // Limit drawing point to max cut length
             Vector2 lineDir = Vector3.Normalize(new Vector2(worldMousePos.x, worldMousePos.y) - cutStartPoint);
             Vector3 lineEndPoint = limitVector(cutStartPoint, lineDir, worldMousePos, maxCutLength);
+            lineEndPoint.z = transform.position.z;
 
             // Draw cut trace line
-            Vector3[] points = new Vector3[2] {cutStartPoint, lineEndPoint};
+            Vector3[] points = new Vector3[2] {transform.InverseTransformPoint(cutStartPoint), transform.InverseTransformPoint(lineEndPoint)};
             lineRenderer.SetPositions(points);
         }
 
@@ -219,6 +220,11 @@ public class PlayerMovement : MonoBehaviour {
             }
             else {
                 animator.Play("Hurt");
+                rigidBody.position = respawnPoint;
+
+                SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+                soundManager.playDamage();
+                
                 lifeUI.transform.GetChild(3 - health).gameObject.SetActive(false);
             }
         }
@@ -241,6 +247,9 @@ public class PlayerMovement : MonoBehaviour {
             else {
                 animator.Play("Hurt");
                 rigidBody.position = respawnPoint;
+
+                SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+                soundManager.playDamage();
             }
         }
 
@@ -272,11 +281,15 @@ public class PlayerMovement : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D otherCollider) {
         if (otherCollider.gameObject.CompareTag("Cuttable") && isCutting && otherCollider.gameObject.GetComponent<Cuttable>().canCut) {
+            // Play sound
+            SoundManager soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+            soundManager.playSlash();
+
+            // Change animation to attack
+            animator.Play("Attack");
+
             Cuttable cuttableScript = (Cuttable)otherCollider.gameObject.GetComponent<Cuttable>();
             cuttableScript.cut(cutStartPoint, cutEndPoint);
-
-            // Change animation to falling
-            animator.Play("Attack");
         }
     }
 
