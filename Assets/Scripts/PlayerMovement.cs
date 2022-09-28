@@ -209,8 +209,10 @@ public class PlayerMovement : MonoBehaviour {
 
         if (collision.gameObject.CompareTag("Enemy")) {
             health -= 1;
-            if (health <= 0)
+            if (health <= 0) {
                 animator.Play("Dead");
+                SceneManager.LoadScene("End");
+            }
             else
                 animator.Play("Hurt");
         }
