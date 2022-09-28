@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour {
     private CapsuleCollider2D capsuleCollider;
@@ -20,6 +21,8 @@ public class PlayerMovement : MonoBehaviour {
     private int totalCuts = 0;
     private bool isCuttingBoss;
     private Vector3 respawnPoint;
+    private bool isPaused;
+    public GameObject pauseMenuUI;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -57,6 +60,10 @@ public class PlayerMovement : MonoBehaviour {
         // Upgrade
         hasUpgrade = false;
 
+        // Pause
+        isPaused = false;
+        pauseMenuUI.SetActive(false);
+
         // Respawn coords
         respawnPoint = transform.position;
 
@@ -69,8 +76,45 @@ public class PlayerMovement : MonoBehaviour {
         animationStates.Add("IsHurt");
         animationStates.Add("IsDead");
     }
+
+    public void Resume() {
+        Time.timeScale = 1f;
+        pauseMenuUI.SetActive(false);
+        isPaused = false;
+    }
+
+    public void Pause() {
+        Time.timeScale = 0f;
+        pauseMenuUI.SetActive(true);
+        isPaused = true;
+    }
+
+    public void Restart() {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void QuitGame() {
+        Application.Quit();
+    }
     
     public void Update() {
+        if (Input.GetKeyDown("escape")) {
+            if (isPaused) {
+                Resume();
+            } else {
+                Pause();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && isPaused) {
+            Restart();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q) && isPaused) {
+            QuitGame();
+        }
+
         // Get mouse click on player's collision box
         if (Input.GetMouseButtonDown(0) && ((hasUpgrade && totalCuts < 2) || isGrounded())) {
             // Mouse world position
