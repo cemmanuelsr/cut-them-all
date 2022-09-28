@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour {
     private Vector3 respawnPoint;
     private bool isPaused;
     public GameObject pauseMenuUI;
+    public GameObject lifeUI;
 
     public float maxCutLength;
     public float cutSpeed;
@@ -63,6 +64,7 @@ public class PlayerMovement : MonoBehaviour {
         // Pause
         isPaused = false;
         pauseMenuUI.SetActive(false);
+        lifeUI.SetActive(true);
 
         // Respawn coords
         respawnPoint = transform.position;
@@ -80,12 +82,14 @@ public class PlayerMovement : MonoBehaviour {
     public void Resume() {
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
+        lifeUI.SetActive(true);
         isPaused = false;
     }
 
     public void Pause() {
         Time.timeScale = 0f;
         pauseMenuUI.SetActive(true);
+        lifeUI.SetActive(false);
         isPaused = true;
     }
 
@@ -213,8 +217,10 @@ public class PlayerMovement : MonoBehaviour {
                 animator.Play("Dead");
                 SceneManager.LoadScene("End");
             }
-            else
+            else {
                 animator.Play("Hurt");
+                lifeUI.transform.GetChild(3 - health).gameObject.SetActive(false);
+            }
         }
 
         if (collision.gameObject.CompareTag("Upgrade")) {
@@ -248,6 +254,9 @@ public class PlayerMovement : MonoBehaviour {
             CameraSmoothFollow smoothFollow = cam.GetComponent<CameraSmoothFollow>();
             smoothFollow.target = GameObject.Find("BossCameraAnchor");
             health = 3;
+            lifeUI.transform.GetChild(0).gameObject.SetActive(true);
+            lifeUI.transform.GetChild(1).gameObject.SetActive(true);
+            lifeUI.transform.GetChild(2).gameObject.SetActive(true);
 
             GameObject boss = GameObject.Find("BossSlime");
             boss.GetComponent<BossSlime>().run = true;
