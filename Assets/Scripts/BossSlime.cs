@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossSlime : MonoBehaviour
 {
@@ -63,6 +64,7 @@ public class BossSlime : MonoBehaviour
         if (health <= 0) {
             animator.PlayInFixedTime("Death");
             Destroy(gameObject);
+            SceneManager.LoadScene("Victory");
         } else
             animator.Play("Hurt");
 
