@@ -1,6 +1,6 @@
 # Cut Them All - 2
 
-Jogo desenvolvido para a disciplina de Jogos Digitais.
+Jogo desenvolvido para a disciplina de Jogos Digitais. Confira também o [beatchart da fase 1-1](https://docs.google.com/spreadsheets/d/11izQiRJqqd38znzma68Ua6llGmEFq2FQTWyfO9EKhtc/edit?usp=sharing).
 
 ## Setup
 
